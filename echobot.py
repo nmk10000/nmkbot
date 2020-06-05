@@ -1,50 +1,37 @@
-import json 
-import requests
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Updater, CommandHandler, CallbackQueryHandler
+
+
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
 
 TOKEN = "1285306305:AAHuPNLroWn6JU4ocZegsQQ7pTooyegB1eI"
-URL = "https://api.telegram.org/bot{}/".format(TOKEN)
+
+def start_tcb(self, bot, update, args):
+
+        """
+        start_tcb - callback triggered on /start command
+
+        :param bot: bot object comes from telegram API
+        :param update: update object comes from telegram API
+        :param args: our custom args
+
+        """
+
+        user_data = bot.get_chat(update.message.chat_id)
+
+        bot.sendMessage(
+            chat_id=update.message.chat_id, text="Hello {}, I'm HMSU Radio Bot.".format(user_data.username)
+        )
+
+        # keyboard = [[InlineKeyboardButton("Get radiokey", callback_data='1'), InlineKeyboardButton("Help", callback_data='2')]]
+
+        # reply_markup = InlineKeyboardMarkup(keyboard)
+
+        # update.message.reply_text('Please choose:', reply_markup=reply_markup)
 
 
-def get_url(url):
-    response = requests.get(url)
-    content = response.content.decode("utf8")
-    return content
-
-
-def get_json_from_url(url):
-    content = get_url(url)
-    js = json.loads(content)
-    return js
-
-
-def get_updates():
-    url = URL + "getUpdates"
-    js = get_json_from_url(url)
-    return js
-
-
-def get_last_chat_id_and_text(updates):
-    num_updates = len(updates["result"])
-    last_update = num_updates - 1
-    text = updates["result"][last_update]["message"]["text"]
-    chat_id = updates["result"][last_update]["message"]["chat"]["id"]
-    return (text, chat_id)
-
-
-def send_message(text, chat_id):
-    url = URL + "sendMessage?text=hi&chat_id={}".format(chat_id)
-    get_url(url)
-    
-
-def main():
-    last_textchat = (None, None)
-    while True:
-        text, chat = get_last_chat_id_and_text(get_updates())
-        if (text, chat) != last_textchat:
-            send_message(text, chat)
-            last_textchat = (text, chat)
-        time.sleep(0.5)
-
-
-if __name__ == '__main__':
-    main()
+        bot.sendMessage(chat_id=update.message.chat_id, text="Type /help for full list of commands") 
